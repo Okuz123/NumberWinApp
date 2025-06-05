@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Prediction V3</title>
+    <style>
+        body {
+            font-family: monospace;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .banner {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff00ff;
+            text-shadow: 2px 2px 4px #00ffff;
+            margin-bottom: 20px;
+        }
+        .red { color: #ff0000; }
+        .green { color: #00ff00; }
+        .yellow { color: #ffff00; }
+        .neon { color: #00ffff; }
+        .purple { color: #800080; }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        input[type="number"] {
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px;
+            width: 60px;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #00ffff;
+            color: #000;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff00ff;
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 18px;
+            white-space: pre-wrap;
+            text-align: left;
+        }
+        .animation {
+            font-size: 20px;
+            color: #00ffff;
+            margin: 10px 0;
+        }
+        #period {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffff00;
+            margin: 10px 0;
+        }
+        #time {
+            font-size: 16px;
+            color: #666;
+        }
+        .method-prediction {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #333;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="banner">Color Prediction V3</div>
+        <div class="red">Contact on Telegram @predictor_pro</div>
+        <div id="period">Loading...</div>
+        <div id="time"></div>
+        <div class="yellow">Enter 7 Numbers (0-9):</div>
+        <div>
+            <input type="number" id="num1" min="0" max="9" placeholder="0-9" required>
+            <input type="number" id="num2" min="0" max="9" placeholder="0-9" required>
+            <input type="number" id="num3" min="0" max="9" placeholder="0-9" required>
+            <input type="number" id="num4" min="0" max="9" placeholder="0-9" required>
+            <input type="number" id="num5" min="0" max="9" placeholder="0-9" required>
+            <input type="number" id="num6" min="0" max="9" placeholder="0-9" required>
+            <input type="number" id="num7" min="0" max="9" placeholder="0-9" required>
+        </div>
+        <button onclick="startProcess()">Predict</button>
+        <div id="animation" class="animation"></div>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        let period = 1;
+        let history = [];
+
+        // Period Number Generator
+        function pad(n, width = 2) {
+            return n.toString().padStart(width, '0');
+        }
+
+        function updatePeriodNumber() {
+            const now = new Date();
+            const baseTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+            const baseRoundNumber = 9671;
+            const diffMinutes = Math.floor((now - baseTime) / 60000);
+            const currentRoundNumber = baseRoundNumber + diffMinutes;
+            const year = now.getFullYear();
+            const month = pad(now.getMonth() + 1);
+            const day = pad(now.getDate());
+            const round = pad(currentRoundNumber, 5);
+            const systemPrefix = "1000";
+            const periodNumber = `${year}${month}${day}${systemPrefix}${round}`;
+            document.getElementById("period").textContent = `Period: ${periodNumber}`;
+            document.getElementById("time").textContent = `Time: ${now.toLocaleTimeString()}`;
+        }
+
+        updatePeriodNumber();
+        setInterval(updatePeriodNumber, 1000);
+
+        // Prediction Methods
+        function matrixMethod(numbers) {
+            const sum = numbers.reduce((a, b) => a + b, 0);
+            return sum % 10;
+        }
+
+        function compositeMethod(numbers) {
+            const product = numbers.reduce((a, b) => a * (b + 1), 1);
+            return Math.floor(product % 10);
+        }
+
+        function gaussianMethod(numbers) {
+            const weights = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4];
+            const weightedSum = numbers.reduce((sum, num, i) => sum + num * weights[i], 0);
+            return Math.floor(weightedSum % 10);
+        }
+
+        function combinedMethod(numbers) {
+            const m1 = matrixMethod(numbers);
+            const m2 = compositeMethod(numbers);
+            const m3 = gaussianMethod(numbers);
+            return Math.floor((m1 + m2 + m3) / 3) % 10;
+        }
+
+        function arithmeticMethod(numbers) {
+            const diff = numbers[6] - numbers[5];
+            return (numbers[6] + diff) % 10 < 0 ? (numbers[6] + diff) % 10 + 10 : (numbers[6] + diff) % 10;
+        }
+
+        function linearGradientMethod(numbers) {
+            const trend = numbers.slice(-3).reduce((sum, n) => sum + n, 0) / 3;
+            return Math.floor(trend) % 10;
+        }
+
+        function innerImageMethod(numbers) {
+            const sum = numbers.reduce((a, b) => a + b, 0);
+            return (sum * 3) % 10;
+        }
+
+        function predictNextNumber(numbers) {
+            const predictions = [
+                matrixMethod(numbers),
+                compositeMethod(numbers),
+                gaussianMethod(numbers),
+                combinedMethod(numbers),
+                arithmeticMethod(numbers),
+                linearGradientMethod(numbers),
+                innerImageMethod(numbers)
+            ];
+            return predictions.sort((a, b) =>
+                predictions.filter(v => v === a).length - predictions.filter(v => v === b).length
+            ).pop();
+        }
+
+        function getColor(number) {
+            return number % 2 === 0 ? '♥️ RED' : '💚 GREEN';
+        }
+
+        function getSignal(number) {
+            return number >= 5 ? 'Big' : 'Small';
+        }
+
+        function animate(message, callback) {
+            const animationElement = document.getElementById('animation');
+            const chars = ['|', '/', '-', '\\'];
+            let i = 0;
+            const interval = setInterval(() => {
+                animationElement.textContent = `${message} ${chars[i % chars.length]}`;
+                i++;
+            }, 100);
+            setTimeout(() => {
+                clearInterval(interval);
+                animationElement.textContent = 'Done!';
+                setTimeout(callback, 500);
+            }, 3000);
+        }
+
+        function startProcess() {
+            const inputs = [
+                parseInt(document.getElementById('num1').value),
+                parseInt(document.getElementById('num2').value),
+                parseInt(document.getElementById('num3').value),
+                parseInt(document.getElementById('num4').value),
+                parseInt(document.getElementById('num5').value),
+                parseInt(document.getElementById('num6').value),
+                parseInt(document.getElementById('num7').value)
+            ];
+
+            if (inputs.some(isNaN) || inputs.some(n => n < 0 || n > 9)) {
+                alert('Please enter 7 valid numbers between 0 and 9');
+                return;
+            }
+
+            animate('Analyzing patterns...', () => {
+                const methodPredictions = {
+                    'Matrix Method': matrixMethod(inputs),
+                    'Composite Method': compositeMethod(inputs),
+                    'Gaussian Method': gaussianMethod(inputs),
+                    'Combined Method': combinedMethod(inputs),
+                    'Arithmetic Method': arithmeticMethod(inputs),
+                    'Linear Gradient Method': linearGradientMethod(inputs),
+                    'Inner Image Method': innerImageMethod(inputs)
+                };
+                const finalNumber = predictNextNumber(inputs);
+                const finalColor = getColor(finalNumber);
+                const finalSignal = getSignal(finalNumber);
+                const periodNumber = document.getElementById('period').textContent.split(': ')[1];
+
+                let output = `Period: ${periodNumber}\n\n`;
+                output += `Individual Method Predictions:\n`;
+                for (const [method, number] of Object.entries(methodPredictions)) {
+                    const color = getColor(number);
+                    const signal = getSignal(number);
+                    output += `<div class="method-prediction purple">${method}: Number: ${number}, <span class="${color.includes('RED') ? 'red' : 'green'}">${color}</span>, Signal: ${signal}</div>\n`;
+                }
+                output += `\nFinal Prediction:\n`;
+                output += `Number: ${finalNumber}\n`;
+                output += `Color: <span class="${finalColor.includes('RED') ? 'red' : 'green'}">${finalColor}</span>\n`;
+                output += `Signal: ${finalSignal}\n`;
+                output += `--------------------------------\n`;
+
+                document.getElementById('output').innerHTML = output;
+
+                history.push({ period: periodNumber, numbers: inputs, methodPredictions, finalPrediction: { number: finalNumber, color: finalColor, signal: finalSignal } });
+                period++;
+
+                document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                startProcess();
+            }
+        });
+    </script>
+</body>
+</html>
